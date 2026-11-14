@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { Play, RotateCcw } from 'lucide-react';
 import { FARMER_IMAGE_URL } from '../utils/spriteLoader';
+import { soundEngine } from '../utils/audio';
 
 interface TitleScreenProps {
   hasSave: boolean;
@@ -17,6 +18,7 @@ export const TitleScreen: React.FC<TitleScreenProps> = ({
     const onKey = (e: KeyboardEvent) => {
       if (e.key === 'Enter' || e.code === 'Space') {
         e.preventDefault();
+        soundEngine.playBackgroundMusic();
         if (hasSave) onContinue();
         else onNewGame();
       }
@@ -24,6 +26,16 @@ export const TitleScreen: React.FC<TitleScreenProps> = ({
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
   }, [hasSave, onContinue, onNewGame]);
+
+  const startNewGame = () => {
+    soundEngine.playBackgroundMusic();
+    onNewGame();
+  };
+
+  const continueGame = () => {
+    soundEngine.playBackgroundMusic();
+    onContinue();
+  };
 
   return (
     <div className="fixed inset-0 z-30 flex flex-col justify-between p-6 sm:p-12 bg-gradient-to-r from-stone-950/92 via-stone-950/70 to-stone-950/35">
@@ -73,21 +85,21 @@ export const TitleScreen: React.FC<TitleScreenProps> = ({
           </div>
 
           <p className="text-sm sm:text-base text-stone-300 max-w-lg leading-relaxed mx-auto md:mx-0">
-            Kelola ladang mengikuti siklus curah hujan 4 musim Indonesia (Mareng, Kemarau, Labuh, dan Penghujan), tebang kayu di hutan kanan, berbelanja serta menjual hasil panen lewat PC di rumah, hingga kumpulkan 1.000.000 EG untuk membeli Kebun Atas.
+            Kelola ladang mengikuti siklus curah hujan 4 musim Indonesia (Mareng, Kemarau, Labuh, dan Penghujan), tebang kayu di hutan kanan, berbelanja serta menjual hasil panen lewat PC di rumah.
           </p>
 
           <div className="flex flex-wrap items-center justify-center md:justify-start gap-3 pt-1">
             {hasSave ? (
               <>
                 <button
-                  onClick={onContinue}
+                  onClick={continueGame}
                   className="px-6 py-3.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-stone-950 font-bold text-sm sm:text-base flex items-center gap-2.5 shadow-lg transition-transform active:scale-95 cursor-pointer"
                 >
                   <Play className="w-5 h-5 fill-current" />
                   <span>Lanjutkan Bertani</span>
                 </button>
                 <button
-                  onClick={onNewGame}
+                  onClick={startNewGame}
                   className="px-5 py-3.5 rounded-xl bg-stone-900/90 hover:bg-stone-800 border border-stone-700 text-stone-200 font-semibold text-sm flex items-center gap-2 transition-colors cursor-pointer"
                 >
                   <RotateCcw className="w-4 h-4" />
@@ -96,7 +108,7 @@ export const TitleScreen: React.FC<TitleScreenProps> = ({
               </>
             ) : (
               <button
-                onClick={onNewGame}
+                onClick={startNewGame}
                 className="px-7 py-3.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-stone-950 font-bold text-base flex items-center gap-2.5 shadow-lg transition-transform active:scale-95 cursor-pointer"
               >
                 <Play className="w-5 h-5 fill-current" />
