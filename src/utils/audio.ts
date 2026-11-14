@@ -1,10 +1,16 @@
 const VOLUME_STORAGE_KEY = 'nusa_tani_volume_v1';
+const MUSIC_VOLUME_STORAGE_KEY = 'nusa_tani_music_volume_v1';
+const MUSIC_VOLUME_MAX = 0.8;
+const BACKGROUND_MUSIC_URL = '/assets/aistudio/Lesung___Kotak_Musik_Tani__Versi_2__890a5565.mp3';
 
 class SoundEngine {
   private ctx: AudioContext | null = null;
   private masterGain: GainNode | null = null;
   private muted = false;
   private volume = 1.0; // Default Mode Maksimal (100%)
+  private musicVolume = MUSIC_VOLUME_MAX;
+  private backgroundMusic: HTMLAudioElement | null = null;
+  private musicRequested = false;
   private rainGain: GainNode | null = null;
   private rainSource: AudioBufferSourceNode | null = null;
 
@@ -18,10 +24,66 @@ class SoundEngine {
             this.volume = Math.max(0, Math.min(1, parsed));
           }
         }
+        const savedMusicVolume = localStorage.getItem(MUSIC_VOLUME_STORAGE_KEY);
+        if (savedMusicVolume !== null) {
+          const parsedMusicVolume = parseFloat(savedMusicVolume);
+          if (!Number.isNaN(parsedMusicVolume)) {
+            this.musicVolume = Math.max(0, Math.min(MUSIC_VOLUME_MAX, parsedMusicVolume));
+          }
+        }
       } catch {
         // ignore storage access issues
       }
+
+      // Browsers require a user gesture before audio can start.
+      window.addEventListener('pointerdown', () => this.playBackgroundMusic(), { once: true });
+      window.addEventListener('keydown', () => this.playBackgroundMusic(), { once: true });
+      document.addEventListener('visibilitychange', () => {
+        if (document.hidden) this.backgroundMusic?.pause();
+        else if (this.musicRequested) this.resumeBackgroundMusic();
+      });
     }
+  }
+
+  private ensureBackgroundMusic(): HTMLAudioElement | null {
+    if (typeof window === 'undefined') return null;
+    if (!this.backgroundMusic) {
+      this.backgroundMusic = new Audio(BACKGROUND_MUSIC_URL);
+      this.backgroundMusic.loop = true;
+      this.backgroundMusic.preload = 'auto';
+      this.backgroundMusic.volume = this.musicVolume;
+    }
+    return this.backgroundMusic;
+  }
+
+  private resumeBackgroundMusic() {
+    if (this.muted || this.musicVolume <= 0 || document.hidden) return;
+    const music = this.ensureBackgroundMusic();
+    music?.play().catch(() => {
+      // Playback will be retried after the next user gesture if the browser blocks it.
+    });
+  }
+
+  public playBackgroundMusic() {
+    this.musicRequested = true;
+    this.resumeBackgroundMusic();
+  }
+
+  public setMusicVolume(vol: number) {
+    this.musicVolume = Math.max(0, Math.min(MUSIC_VOLUME_MAX, vol));
+    try {
+      localStorage.setItem(MUSIC_VOLUME_STORAGE_KEY, String(this.musicVolume));
+    } catch {
+      // ignore storage issues
+    }
+    const music = this.ensureBackgroundMusic();
+    if (music) music.volume = this.musicVolume;
+    if (this.musicVolume <= 0) music?.pause();
+    else if (this.musicRequested) this.resumeBackgroundMusic();
+  }
+
+  public getMusicVolume(): number {
+    return this.musicVolume;
   }
 
   private ensureContext(): AudioContext | null {
@@ -75,6 +137,9 @@ class SoundEngine {
     }
     if (muted) {
       this.stopRainAmbience();
+      this.backgroundMusic?.pause();
+    } else if (this.musicRequested) {
+      this.resumeBackgroundMusic();
     }
   }
 
@@ -91,6 +156,7 @@ class SoundEngine {
     }
     if (this.volume > 0 && this.muted) {
       this.muted = false;
+      if (this.musicRequested) this.resumeBackgroundMusic();
     }
     if (this.ctx && this.masterGain) {
       this.masterGain.gain.setTargetAtTime(
