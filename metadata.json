@@ -1,5 +1,5 @@
 {
-  "name": "Nusa Tani",
+  "name": "Lembah Kalabas",
   "description": "Game simulasi pertanian Nusantara 4 musim (Mareng, Kemarau, Labuh, Penghujan) dengan siklus curah hujan lokal, hutan, kebun atas, dan transaksi online lewat PC rumah.",
   "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]

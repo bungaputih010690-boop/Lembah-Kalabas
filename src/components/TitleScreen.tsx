@@ -30,13 +30,13 @@ export const TitleScreen: React.FC<TitleScreenProps> = ({
       <div />
 
       <div className="max-w-4xl w-full mx-auto flex flex-col md:flex-row items-center md:items-end justify-between gap-10">
-        {/* Left: Bespoke SVG Lockup & Start CTA */}
         <div className="flex-1 space-y-6 text-center md:text-left">
-          <div className="inline-block">
+          <div className="inline-block w-full max-w-[500px]">
             <svg
-              viewBox="0 0 360 92"
-              className="w-72 sm:w-88 h-auto mx-auto md:mx-0"
-              aria-label="Nusa Tani"
+              viewBox="0 0 500 92"
+              className="w-full h-auto mx-auto md:mx-0"
+              aria-label="Lembah Kalabas"
+              role="img"
             >
               <g>
                 <path
@@ -53,10 +53,10 @@ export const TitleScreen: React.FC<TitleScreenProps> = ({
                   fill="#FEF3C7"
                   fontFamily="Bricolage Grotesque, system-ui, sans-serif"
                   fontWeight="800"
-                  fontSize="44"
+                  fontSize="40"
                   letterSpacing="-1"
                 >
-                  Nusa Tani
+                  Lembah Kalabas
                 </text>
                 <text
                   x="98"
@@ -106,12 +106,11 @@ export const TitleScreen: React.FC<TitleScreenProps> = ({
           </div>
         </div>
 
-        {/* Right: Farmer Character Showcase */}
         <div className="w-44 sm:w-52 shrink-0 bg-stone-900/90 border border-stone-700/80 rounded-2xl p-3 shadow-2xl">
           <div className="aspect-[3/4] rounded-xl overflow-hidden bg-stone-100">
             <img
               src={FARMER_IMAGE_URL}
-              alt="Karakter Petani Nusa Tani"
+              alt="Karakter Petani Lembah Kalabas"
               referrerPolicy="no-referrer"
               className="w-full h-full object-contain"
             />
@@ -122,9 +121,8 @@ export const TitleScreen: React.FC<TitleScreenProps> = ({
         </div>
       </div>
 
-      {/* Single flat control-hint line */}
       <div className="text-center text-xs text-stone-400 tracking-wide">
-        Klik / Tap Tanah untuk Berjalan · Tahan & Geser untuk Mengarahkan · Klik Petak / Objek untuk Bertani & Interaksi · Klik Slot 1-9 untuk Ganti Alat
+        Klik / Tap Tanah untuk Berjalan · Tahan &amp; Geser untuk Mengarahkan · Klik Petak / Objek untuk Bertani &amp; Interaksi · Klik Slot 1-9 untuk Ganti Alat
       </div>
     </div>
   );
