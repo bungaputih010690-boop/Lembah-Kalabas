@@ -1,7 +1,7 @@
 const VOLUME_STORAGE_KEY = 'nusa_tani_volume_v1';
 const MUSIC_VOLUME_STORAGE_KEY = 'nusa_tani_music_volume_v1';
 const MUSIC_VOLUME_MAX = 0.8;
-const BACKGROUND_MUSIC_URL = '/assets/aistudio/Lesung___Kotak_Musik_Tani__Versi_2__890a5565.mp3';
+const BACKGROUND_MUSIC_URL = `${import.meta.env.BASE_URL}assets/aistudio/Lesung___Kotak_Musik_Tani__Versi_2__890a5565.mp3`;
 
 class SoundEngine {
   private ctx: AudioContext | null = null;
@@ -59,8 +59,9 @@ class SoundEngine {
   private resumeBackgroundMusic() {
     if (this.muted || this.musicVolume <= 0 || document.hidden) return;
     const music = this.ensureBackgroundMusic();
-    music?.play().catch(() => {
-      // Playback will be retried after the next user gesture if the browser blocks it.
+    music?.play().catch((error: unknown) => {
+      // A user gesture or successful asset load may be needed before playback can proceed.
+      console.warn('Musik latar tidak dapat diputar:', error);
     });
   }
 
